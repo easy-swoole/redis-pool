@@ -1,4 +1,4 @@
-# Mysqli-Pool
+# Redis-Pool
 ## Pool Register
 Register connection config before worker start ( master process);
 
