@@ -8,6 +8,7 @@ use EasySwoole\Component\Pool\AbstractPool;
 use EasySwoole\Component\Pool\PoolConf;
 use EasySwoole\Component\Pool\PoolManager;
 use EasySwoole\Component\Singleton;
+use EasySwoole\MysqliPool\RedisPoolException;
 use EasySwoole\Utility\Random;
 
 class Redis
@@ -19,7 +20,10 @@ class Redis
     function register(string $name,Config $config):PoolConf
     {
         if(isset($this->list[$name])){
-            return $this->list[$name]['config'];
+            if(isset($this->list[$name])){
+                //已经注册，则抛出异常
+                throw new RedisPoolException("redis pool:{$name} is already been register");
+            }
         }
         /*
            * 绕过去实现动态class
