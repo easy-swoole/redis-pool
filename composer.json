@@ -1,5 +1,5 @@
 {
-    "name": "easyswoole/reedis-pool",
+    "name": "easyswoole/redis-pool",
     "type": "library",
     "description": "An efficient swoole framework",
     "keywords" : ["swoole", "framework", "async","easyswoole"],
