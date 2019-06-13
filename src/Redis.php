@@ -8,7 +8,7 @@ use EasySwoole\Component\Pool\AbstractPool;
 use EasySwoole\Component\Pool\PoolConf;
 use EasySwoole\Component\Pool\PoolManager;
 use EasySwoole\Component\Singleton;
-use EasySwoole\MysqliPool\RedisPoolException;
+use EasySwoole\RedisPool\RedisPoolException;
 use EasySwoole\Utility\Random;
 
 class Redis
