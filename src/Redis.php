@@ -8,7 +8,6 @@ use EasySwoole\Component\Pool\AbstractPool;
 use EasySwoole\Component\Pool\PoolConf;
 use EasySwoole\Component\Pool\PoolManager;
 use EasySwoole\Component\Singleton;
-use EasySwoole\RedisPool\RedisPoolException;
 use EasySwoole\Utility\Random;
 
 class Redis
@@ -38,8 +37,8 @@ class Redis
                 protected function createObject()
                 {
                     $config = $this->getConfig()->getExtraConf();
-                    $conn = new Connection();
-                    $ret = $conn->connect($config->getHost(),$config->getPort(),$config->getSerialize());
+                    $conn = new Connection($config->getOptions());
+                    $ret = $conn->connect($config->getHost(),$config->getPort());
                     if(!$ret){
                         return;
                     }
@@ -48,11 +47,6 @@ class Redis
                     }
                     if(!$ret){
                         return;
-                    }
-                    if(!empty($config->getOptions())){
-                        foreach ($config->getOptions() as $key => $item){
-                            $conn->setOption($key,$item);
-                        }
                     }
                     return $conn;
                 }
@@ -98,7 +92,6 @@ class Redis
             if($item instanceof AbstractPool){
                 return $item;
             }else{
-
                 $class = $item['class'];
                 $pool = PoolManager::getInstance()->getPool($class);
                 $this->list[$name] = $pool;

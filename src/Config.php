@@ -8,12 +8,12 @@ use EasySwoole\Spl\SplBean;
 
 class Config extends SplBean
 {
-    protected $host;
-    protected $port;
+    protected $host = '127.0.0.1';
+    protected $port = 6379;
     protected $auth;
-    protected $options = [];
-    protected $serialize=false;
-    protected $timeout = 3;
+    protected $options = [
+        'serialize'=>true
+    ];
 
     /**
      * @return mixed
@@ -78,37 +78,4 @@ class Config extends SplBean
     {
         $this->options = $options;
     }
-
-    /**
-     * @return int
-     */
-    public function getTimeout(): int
-    {
-        return $this->timeout;
-    }
-
-    /**
-     * @param int $timeout
-     */
-    public function setTimeout(int $timeout): void
-    {
-        $this->timeout = $timeout;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getSerialize(): bool
-    {
-        return $this->serialize;
-    }
-
-    /**
-     * @param bool $serialize
-     */
-    public function setSerialize(bool $serialize): void
-    {
-        $this->serialize = $serialize;
-    }
-
 }
