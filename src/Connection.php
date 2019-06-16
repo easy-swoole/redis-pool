@@ -6,7 +6,7 @@ namespace EasySwoole\RedisPool;
 
 use EasySwoole\Component\Pool\PoolObjectInterface;
 
-class Connection extends \Redis implements PoolObjectInterface
+class Connection extends \Swoole\Coroutine\Redis implements PoolObjectInterface
 {
     function gc()
     {

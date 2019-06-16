@@ -39,7 +39,7 @@ class Redis
                 {
                     $config = $this->getConfig()->getExtraConf();
                     $conn = new Connection();
-                    $ret = $conn->connect($config->getHost(),$config->getPort(),$config->getTimeout());
+                    $ret = $conn->connect($config->getHost(),$config->getPort(),$config->getSerialize());
                     if(!$ret){
                         return;
                     }

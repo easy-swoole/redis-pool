@@ -12,6 +12,7 @@ class Config extends SplBean
     protected $port;
     protected $auth;
     protected $options = [];
+    protected $serialize=false;
     protected $timeout = 3;
 
     /**
@@ -93,4 +94,21 @@ class Config extends SplBean
     {
         $this->timeout = $timeout;
     }
+
+    /**
+     * @return bool
+     */
+    public function getSerialize(): bool
+    {
+        return $this->serialize;
+    }
+
+    /**
+     * @param bool $serialize
+     */
+    public function setSerialize(bool $serialize): void
+    {
+        $this->serialize = $serialize;
+    }
+
 }
