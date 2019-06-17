@@ -45,6 +45,7 @@ class Redis
                     if(!empty($config->getAuth())){
                         $ret = $conn->auth($config->getAuth());
                     }
+                    $conn->setOptions($config->getOptions());
                     if(!$ret){
                         return;
                     }
