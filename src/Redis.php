@@ -37,7 +37,7 @@ class Redis
                 protected function createObject()
                 {
                     $config = $this->getConfig()->getExtraConf();
-                    $conn = new Connection($config->getOptions());
+                    $conn = new Connection();
                     $ret = $conn->connect($config->getHost(),$config->getPort());
                     if(!$ret){
                         return;
