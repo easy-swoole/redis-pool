@@ -21,6 +21,6 @@ class Connection extends Redis implements PoolObjectInterface
 
     function beforeUse(): bool
     {
-        return true;
+        return $this->connected;
     }
 }
