@@ -12,9 +12,9 @@ class Config extends SplBean
     protected $port = 6379;
     protected $auth;
     protected $options = [
-        'serialize'=>true
+        'serialize' => true
     ];
-    protected $db;
+    protected $db = 0;
 
     /**
      * @return mixed
@@ -81,7 +81,7 @@ class Config extends SplBean
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getDb()
     {
@@ -89,7 +89,7 @@ class Config extends SplBean
     }
 
     /**
-     * @param mixed $db
+     * @param int $db
      */
     public function setDb($db)
     {
