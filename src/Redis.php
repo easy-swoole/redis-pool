@@ -46,8 +46,10 @@ class Redis
                         $ret = $conn->auth($config->getAuth());
                     }
                     $conn->setOptions($config->getOptions());
-                    if(!$ret){
-                        return;
+                    
+                    //选择数据库,默认为0
+                    if(!empty($config->getDb())){
+                        $conn->select($config->getDb());
                     }
                     return $conn;
                 }
