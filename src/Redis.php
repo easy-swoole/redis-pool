@@ -1,78 +1,48 @@
 <?php
 
-
 namespace EasySwoole\RedisPool;
 
-
-use EasySwoole\Component\Pool\AbstractPool;
-use EasySwoole\Component\Pool\PoolConf;
-use EasySwoole\Component\Pool\PoolManager;
 use EasySwoole\Component\Singleton;
-use EasySwoole\Utility\Random;
+use EasySwoole\Redis\Config\RedisConfig;
+use EasySwoole\Pool\Config as PoolConfig;
 
 class Redis
 {
     use Singleton;
+    protected $container = [];
 
-    private $list = [];
-
-    function register(string $name,Config $config):PoolConf
+    function register(string $name, RedisConfig $config): PoolConfig
     {
-        if(isset($this->list[$name])){
-            if(isset($this->list[$name])){
-                //已经注册，则抛出异常
-                throw new RedisPoolException("redis pool:{$name} is already been register");
-            }
+        if(isset($this->container[$name])){
+            //已经注册，则抛出异常
+            throw new RedisPoolException("redis pool:{$name} is already been register");
         }
-        /*
-           * 绕过去实现动态class
-           */
-        $class = 'C'.Random::character(16);
-        $classContent = '<?php
-            
-            namespace EasySwoole\RedisPool;
-            use EasySwoole\Component\Pool\AbstractPool;
-            
-            class '.$class.' extends AbstractPool {
-                protected function createObject()
-                {
-                    $config = $this->getConfig()->getExtraConf();
-                    $conn = new Connection();
-                    $ret = $conn->connect($config->getHost(),$config->getPort());
-                    if(!$ret){
-                        return;
-                    }
-                    if(!empty($config->getAuth())){
-                        $ret = $conn->auth($config->getAuth());
-                    }
-                    $conn->setOptions($config->getOptions());
-                    
-                    //选择数据库,默认为0
-                    if(!empty($config->getDb())){
-                        $conn->select($config->getDb());
-                    }
-                    return $conn;
-                }
-            }';
-        $file = sys_get_temp_dir()."/{$class}.php";
-        file_put_contents($file,$classContent);
-        require_once $file;
-        unlink($file);
-        $class = "EasySwoole\\RedisPool\\{$class}";
-        $poolConfig = PoolManager::getInstance()->register($class);
-        $poolConfig->setExtraConf($config);
-        $this->list[$name] = [
-            'class'=>$class,
-            'config'=>$config
-        ];
+
+        $poolConfig = new PoolConfig();
+        $pool = new RedisPool($poolConfig, $config);
+        $this->container[$name] = $pool;
+
         return $poolConfig;
     }
 
-    static function defer(string $name,$timeout = null):?Connection
+    function get(string $name): ?RedisPool
+    {
+        if (isset($this->container[$name])) {
+            return $this->container[$name];
+        }
+        return null;
+    }
+
+    function pool(string $name): ?RedisPool
+    {
+        return $this->get($name);
+    }
+
+    static function defer(string $name,$timeout = null):?\EasySwoole\Redis\Redis
     {
         $pool = static::getInstance()->pool($name);
         if($pool){
-            return $pool::defer($timeout);
+            return $pool->defer($timeout);
         }else{
             return null;
         }
@@ -82,26 +52,10 @@ class Redis
     {
         $pool = static::getInstance()->pool($name);
         if($pool){
-            return $pool::invoke($call,$timeout);
+            return $pool->invoke($call,$timeout);
         }else{
             return null;
         }
     }
 
-    public function pool(string $name):?AbstractPool
-    {
-        if(isset($this->list[$name])){
-            $item = $this->list[$name];
-            if($item instanceof AbstractPool){
-                return $item;
-            }else{
-                $class = $item['class'];
-                $pool = PoolManager::getInstance()->getPool($class);
-                $this->list[$name] = $pool;
-                return $this->pool($name);
-            }
-        }else{
-            return null;
-        }
-    }
 }
