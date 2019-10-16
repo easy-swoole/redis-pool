@@ -39,11 +39,11 @@ class Redis
         return $this->get($name);
     }
 
-    static function defer(string $name,$timeout = null):?RedisPool
+    static function defer(string $name,$timeout = null):?\EasySwoole\Redis\Redis
     {
         $pool = static::getInstance()->pool($name);
         if($pool){
-            return $pool::defer($timeout);
+            return $pool->defer($timeout);
         }else{
             return null;
         }
@@ -53,7 +53,7 @@ class Redis
     {
         $pool = static::getInstance()->pool($name);
         if($pool){
-            return $pool::invoke($call,$timeout);
+            return $pool->invoke($call,$timeout);
         }else{
             return null;
         }
