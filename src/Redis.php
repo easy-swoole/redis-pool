@@ -2,7 +2,6 @@
 
 namespace EasySwoole\RedisPool;
 
-use App\Pool\RedisPool;
 use EasySwoole\Component\Singleton;
 use EasySwoole\Redis\Config\RedisConfig;
 use EasySwoole\Pool\Config as PoolConfig;
@@ -14,7 +13,7 @@ class Redis
 
     function register(string $name, RedisConfig $config): PoolConfig
     {
-        if(isset($this->list[$name])){
+        if(isset($this->container[$name])){
             //已经注册，则抛出异常
             throw new RedisPoolException("redis pool:{$name} is already been register");
         }

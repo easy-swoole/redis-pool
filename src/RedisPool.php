@@ -6,7 +6,7 @@
  * Time: 14:46
  */
 
-namespace App\Pool;
+namespace  EasySwoole\RedisPool;
 
 use EasySwoole\Pool\Config;
 use EasySwoole\Pool\AbstractPool;
