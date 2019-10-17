@@ -20,7 +20,7 @@
         }
     },
     "require": {
-        "easyswoole/component": "^1.5",
+        "easyswoole/component": "^2.0",
         "easyswoole/spl": "^1.1",
         "easyswoole/redis": "^1.0",
         "easyswoole/pool": "^1.0"
