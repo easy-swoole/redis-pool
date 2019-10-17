@@ -1,6 +1,13 @@
 # Redis-Pool
 Redis-Pool 基于 [pool连接池管理](https://github.com/easy-swoole/pool),[redis协程客户端](https://github.com/easy-swoole/redis) 封装的组件
 
+
+## 安装
+```shell
+composer require easyswoole/redis-pool
+```
+
+
 ## 连接池注册
 使用连接之前注册redis连接池:
 
