@@ -10,8 +10,10 @@ namespace  EasySwoole\RedisPool;
 
 use EasySwoole\Pool\Config;
 use EasySwoole\Pool\AbstractPool;
+use EasySwoole\Redis\Config\RedisClusterConfig;
 use EasySwoole\Redis\Config\RedisConfig;
 use EasySwoole\Redis\Redis;
+use EasySwoole\Redis\RedisCluster;
 
 class RedisPool extends AbstractPool
 {
@@ -32,8 +34,13 @@ class RedisPool extends AbstractPool
 
     protected function createObject()
     {
-        //根据传入的redis配置进行new 一个redis
-        $redis = new Redis($this->redisConfig);
+        //根据传入的redis配置进行判断是否为集群redis
+        if ($this->redisConfig instanceof RedisClusterConfig){
+            $redis = new RedisCluster($this->redisConfig);
+        }else{
+            $redis = new Redis($this->redisConfig);
+        }
+
         return $redis;
     }
 }
