@@ -43,4 +43,22 @@ class RedisPool extends AbstractPool
 
         return $redis;
     }
+
+    /**
+     * @return RedisConfig
+     */
+    public function getRedisConfig(): RedisConfig
+    {
+        return $this->redisConfig;
+    }
+
+    /**
+     * @param RedisConfig $redisConfig
+     */
+    public function setRedisConfig(RedisConfig $redisConfig): void
+    {
+        $this->redisConfig = $redisConfig;
+    }
+
+
 }
