@@ -8,57 +8,23 @@
 
 namespace  EasySwoole\RedisPool;
 
-use EasySwoole\Pool\Config;
-use EasySwoole\Pool\AbstractPool;
+use EasySwoole\Pool\MagicPool;
 use EasySwoole\Redis\Config\RedisClusterConfig;
 use EasySwoole\Redis\Config\RedisConfig;
 use EasySwoole\Redis\Redis;
 use EasySwoole\Redis\RedisCluster;
 
-class RedisPool extends AbstractPool
+class RedisPool extends MagicPool
 {
-    protected $redisConfig;
-
-    /**
-     * 重写构造函数,为了传入redis配置
-     * RedisPool constructor.
-     * @param Config      $conf
-     * @param RedisConfig $redisConfig
-     * @throws \EasySwoole\Pool\Exception\Exception
-     */
-    public function __construct(Config $conf,RedisConfig $redisConfig)
+    function __construct(RedisConfig $redisConfig)
     {
-        parent::__construct($conf);
-        $this->redisConfig = $redisConfig;
+        parent::__construct(function ()use($redisConfig){
+            if ($redisConfig instanceof RedisClusterConfig){
+                $redis = new RedisCluster($redisConfig);
+            }else{
+                $redis = new Redis($redisConfig);
+            }
+            return $redis;
+        });
     }
-
-    protected function createObject()
-    {
-        //根据传入的redis配置进行判断是否为集群redis
-        if ($this->redisConfig instanceof RedisClusterConfig){
-            $redis = new RedisCluster($this->redisConfig);
-        }else{
-            $redis = new Redis($this->redisConfig);
-        }
-
-        return $redis;
-    }
-
-    /**
-     * @return RedisConfig
-     */
-    public function getRedisConfig(): RedisConfig
-    {
-        return $this->redisConfig;
-    }
-
-    /**
-     * @param RedisConfig $redisConfig
-     */
-    public function setRedisConfig(RedisConfig $redisConfig): void
-    {
-        $this->redisConfig = $redisConfig;
-    }
-
-
 }

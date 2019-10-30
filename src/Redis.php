@@ -17,12 +17,9 @@ class Redis
             //已经注册，则抛出异常
             throw new RedisPoolException("redis pool:{$name} is already been register");
         }
-
-        $poolConfig = new PoolConfig();
-        $pool = new RedisPool($poolConfig, $config);
+        $pool = new RedisPool($config);
         $this->container[$name] = $pool;
-
-        return $poolConfig;
+        return $pool->getConfig();
     }
 
     function get(string $name): ?RedisPool
@@ -57,5 +54,4 @@ class Redis
             return null;
         }
     }
-
 }
