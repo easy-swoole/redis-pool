@@ -45,7 +45,7 @@ class Redis
         }
     }
 
-    static function invoker(string $name,callable $call,float $timeout = null)
+    static function invoke(string $name,callable $call,float $timeout = null)
     {
         $pool = static::getInstance()->pool($name);
         if($pool){
