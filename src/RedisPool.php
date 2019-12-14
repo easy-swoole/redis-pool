@@ -23,6 +23,7 @@ class RedisPool extends MagicPool
                 $redis = new RedisCluster($redisConfig);
             }else{
                 $redis = new Redis($redisConfig);
+                $redis->connect($redisConfig->getTimeout());
             }
             return $redis;
         });
