@@ -22,7 +22,7 @@ class Redis
         }
         if($cask){
             $ref = new \ReflectionClass($cask);
-            if((!$ref->isSubclassOf(RedisClient::class)) || (!$ref->isSubclassOf(RedisCluster::class))){
+            if((!$ref->isSubclassOf(RedisClient::class)) && (!$ref->isSubclassOf(RedisCluster::class))){
                 throw new Exception("cask {$cask} not a sub class of EasySwoole\Redis\Redis or EasySwoole\Redis\RedisCluster");
             }
         }
