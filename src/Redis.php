@@ -5,19 +5,28 @@ namespace EasySwoole\RedisPool;
 use EasySwoole\Component\Singleton;
 use EasySwoole\Redis\Config\RedisConfig;
 use EasySwoole\Pool\Config as PoolConfig;
+use EasySwoole\Redis\Redis as RedisClient;
+use EasySwoole\Redis\RedisCluster;
+use EasySwoole\RedisPool\Exception\Exception;
 
 class Redis
 {
     use Singleton;
     protected $container = [];
 
-    function register(string $name, RedisConfig $config): PoolConfig
+    function register(string $name, RedisConfig $config,?string $cask = null): PoolConfig
     {
         if(isset($this->container[$name])){
             //已经注册，则抛出异常
             throw new RedisPoolException("redis pool:{$name} is already been register");
         }
-        $pool = new RedisPool($config);
+        if($cask){
+            $ref = new \ReflectionClass($cask);
+            if((!$ref->isSubclassOf(RedisClient::class)) || (!$ref->isSubclassOf(RedisCluster::class))){
+                throw new Exception("cask {$cask} not a sub class of EasySwoole\Redis\Redis or EasySwoole\Redis\RedisCluster");
+            }
+        }
+        $pool = new RedisPool($config,$cask);
         $this->container[$name] = $pool;
         return $pool->getConfig();
     }
@@ -35,7 +44,7 @@ class Redis
         return $this->get($name);
     }
 
-    static function defer(string $name,$timeout = null):?\EasySwoole\Redis\Redis
+    static function defer(string $name,$timeout = null):?RedisClient
     {
         $pool = static::getInstance()->pool($name);
         if($pool){

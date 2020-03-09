@@ -16,9 +16,12 @@ use EasySwoole\Redis\RedisCluster;
 
 class RedisPool extends MagicPool
 {
-    function __construct(RedisConfig $redisConfig)
+    function __construct(RedisConfig $redisConfig,?string $cask = null)
     {
-        parent::__construct(function ()use($redisConfig){
+        parent::__construct(function ()use($redisConfig,$cask){
+            if($cask){
+                return new $cask($redisConfig);
+            }
             if ($redisConfig instanceof RedisClusterConfig){
                 $redis = new RedisCluster($redisConfig);
             }else{
