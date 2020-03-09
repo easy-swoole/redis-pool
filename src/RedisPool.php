@@ -29,6 +29,11 @@ class RedisPool extends MagicPool
                 $redis->connect($redisConfig->getTimeout());
             }
             return $redis;
-        });
+        },new PoolConfig());
+    }
+
+    function intervalCheck()
+    {
+        parent::intervalCheck();
     }
 }
