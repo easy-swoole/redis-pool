@@ -12,9 +12,10 @@ use EasySwoole\RedisPool\Exception\Exception;
 class Redis
 {
     use Singleton;
+
     protected $container = [];
 
-    function register(string $name, RedisConfig $config,?string $cask = null): PoolConfig
+    function register(RedisConfig $config, string $name ='default', ?string $cask = null): PoolConfig
     {
         if(isset($this->container[$name])){
             //已经注册，则抛出异常
@@ -31,7 +32,7 @@ class Redis
         return $pool->getConfig();
     }
 
-    function get(string $name): ?RedisPool
+    function getPool(string $name ='default'): ?RedisPool
     {
         if (isset($this->container[$name])) {
             return $this->container[$name];
@@ -39,14 +40,9 @@ class Redis
         return null;
     }
 
-    function pool(string $name): ?RedisPool
+    static function defer(string $name ='default',$timeout = null):?RedisClient
     {
-        return $this->get($name);
-    }
-
-    static function defer(string $name,$timeout = null):?RedisClient
-    {
-        $pool = static::getInstance()->pool($name);
+        $pool = static::getInstance()->getPool($name);
         if($pool){
             return $pool->defer($timeout);
         }else{
@@ -54,9 +50,9 @@ class Redis
         }
     }
 
-    static function invoke(string $name,callable $call,float $timeout = null)
+    static function invoke(callable $call,string $name ='default',float $timeout = null)
     {
-        $pool = static::getInstance()->pool($name);
+        $pool = static::getInstance()->getPool($name);
         if($pool){
             return $pool->invoke($call,$timeout);
         }else{
