@@ -13,10 +13,10 @@ composer require easyswoole/redis-pool
 
 ```php
 //redis连接池注册(config默认为127.0.0.1,端口6379)
-\EasySwoole\RedisPool\Redis::getInstance()->register(new \EasySwoole\Redis\Config\RedisConfig(),'redis');
+\EasySwoole\RedisPool\RedisPool::getInstance()->register(new \EasySwoole\Redis\Config\RedisConfig(),'redis');
 
 //redis集群连接池注册
-\EasySwoole\RedisPool\Redis::getInstance()->register(new \EasySwoole\Redis\Config\RedisClusterConfig([
+\EasySwoole\RedisPool\RedisPool::getInstance()->register(new \EasySwoole\Redis\Config\RedisClusterConfig([
         ['172.16.253.156', 9001],
         ['172.16.253.156', 9002],
         ['172.16.253.156', 9003],
@@ -27,13 +27,14 @@ composer require easyswoole/redis-pool
 
 ## 连接池配置
 当注册好时,将返回连接池的poolConf用于配置连接池:
+
 ```php
-$redisPoolConfig = \EasySwoole\RedisPool\Redis::getInstance()->register(new \EasySwoole\Redis\Config\RedisConfig());
+$redisPoolConfig = \EasySwoole\RedisPool\RedisPool::getInstance()->register(new \EasySwoole\Redis\Config\RedisConfig());
 //配置连接池连接数
 $redisPoolConfig->setMinObjectNum(5);
 $redisPoolConfig->setMaxObjectNum(20);
 
-$redisClusterPoolConfig = \EasySwoole\RedisPool\Redis::getInstance()->register(new \EasySwoole\Redis\Config\RedisClusterConfig([
+$redisClusterPoolConfig = \EasySwoole\RedisPool\RedisPool::getInstance()->register(new \EasySwoole\Redis\Config\RedisClusterConfig([
         ['172.16.253.156', 9001],
         ['172.16.253.156', 9002],
         ['172.16.253.156', 9003],
@@ -49,22 +50,22 @@ $redisPoolConfig->setMaxObjectNum(20);
 
 ```php
 //defer方式获取连接
-$redis = \EasySwoole\RedisPool\Redis::defer();
-$redisCluster = \EasySwoole\RedisPool\Redis::defer();
+$redis = \EasySwoole\RedisPool\RedisPool::defer();
+$redisCluster = \EasySwoole\RedisPool\RedisPool::defer();
 $redis->set('a', 1);
 $redisCluster->set('a', 1);
 
 //invoke方式获取连接
-\EasySwoole\RedisPool\Redis::invoke(function (\EasySwoole\Redis\Redis $redis) {
+\EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
     var_dump($redis->set('a', 1));
 });
-\EasySwoole\RedisPool\Redis::invoke(function (\EasySwoole\Redis\Redis $redis) {
+\EasySwoole\RedisPool\RedisPool::invoke(function (\EasySwoole\Redis\Redis $redis) {
     var_dump($redis->set('a', 1));
 });
 
 //获取连接池对象
-$redisPool = \EasySwoole\RedisPool\Redis::getInstance()->getPool();
-$redisClusterPool = \EasySwoole\RedisPool\Redis::getInstance()->getPool();
+$redisPool = \EasySwoole\RedisPool\RedisPool::getInstance()->getPool();
+$redisClusterPool = \EasySwoole\RedisPool\RedisPool::getInstance()->getPool();
 
 $redis = $redisPool->getObj();
 $redisPool->recycleObj($redis);

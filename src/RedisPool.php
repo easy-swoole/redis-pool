@@ -1,60 +1,62 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Tioncico
- * Date: 2019/10/15 0015
- * Time: 14:46
- */
 
-namespace  EasySwoole\RedisPool;
+namespace EasySwoole\RedisPool;
 
-use EasySwoole\Pool\MagicPool;
-use EasySwoole\Redis\Config\RedisClusterConfig;
+use EasySwoole\Component\Singleton;
 use EasySwoole\Redis\Config\RedisConfig;
-use EasySwoole\Redis\Redis;
+use EasySwoole\Pool\Config as PoolConfig;
+use EasySwoole\Redis\Redis as RedisClient;
 use EasySwoole\Redis\RedisCluster;
+use EasySwoole\RedisPool\Exception\Exception;
 
-class RedisPool extends MagicPool
+class RedisPool
 {
-    function __construct(RedisConfig $redisConfig,?string $cask = null)
+    use Singleton;
+
+    protected $container = [];
+
+    function register(RedisConfig $config, string $name ='default', ?string $cask = null): PoolConfig
     {
-        parent::__construct(function ()use($redisConfig,$cask){
-            if($cask){
-                return new $cask($redisConfig);
+        if(isset($this->container[$name])){
+            //已经注册，则抛出异常
+            throw new RedisPoolException("redis pool:{$name} is already been register");
+        }
+        if($cask){
+            $ref = new \ReflectionClass($cask);
+            if((!$ref->isSubclassOf(RedisClient::class)) && (!$ref->isSubclassOf(RedisCluster::class))){
+                throw new Exception("cask {$cask} not a sub class of EasySwoole\Redis\Redis or EasySwoole\Redis\RedisCluster");
             }
-            if ($redisConfig instanceof RedisClusterConfig){
-                $redis = new RedisCluster($redisConfig);
-            }else{
-                $redis = new Redis($redisConfig);
-                $redis->connect($redisConfig->getTimeout());
-            }
-            return $redis;
-        },new PoolConfig());
+        }
+        $pool = new Pool($config,$cask);
+        $this->container[$name] = $pool;
+        return $pool->getConfig();
     }
 
-
-    /**
-     * @param Redis $redis
-     * @return bool
-     */
-    public function itemIntervalCheck($redis): bool
+    function getPool(string $name ='default'): ?Pool
     {
-        /*
-         * 如果最后一次使用时间超过autoPing间隔
-         */
-        if($this->getConfig()->getAutoPing() > 0 && (time() - $redis->__lastUseTime > $this->getConfig()->getAutoPing())){
-            try{
-                //执行一个ping
-                $redis->ping();
-                //标记使用时间，避免被再次gc
-                $redis->__lastUseTime = time();
-                return true;
-            }catch (\Throwable $throwable){
-                //异常说明该链接出错了，return 进行回收
-                return false;
-            }
+        if (isset($this->container[$name])) {
+            return $this->container[$name];
+        }
+        return null;
+    }
+
+    static function defer(string $name ='default',$timeout = null):?RedisClient
+    {
+        $pool = static::getInstance()->getPool($name);
+        if($pool){
+            return $pool->defer($timeout);
         }else{
-            return true;
+            return null;
+        }
+    }
+
+    static function invoke(callable $call,string $name ='default',float $timeout = null)
+    {
+        $pool = static::getInstance()->getPool($name);
+        if($pool){
+            return $pool->invoke($call,$timeout);
+        }else{
+            return null;
         }
     }
 }
