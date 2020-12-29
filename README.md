@@ -55,10 +55,10 @@ $redis->set('a', 1);
 $redisCluster->set('a', 1);
 
 //invoke方式获取连接
-\EasySwoole\RedisPool\Redis::invoker(function (\EasySwoole\Redis\Redis $redis) {
+\EasySwoole\RedisPool\Redis::invoke(function (\EasySwoole\Redis\Redis $redis) {
     var_dump($redis->set('a', 1));
 });
-\EasySwoole\RedisPool\Redis::invoker(function (\EasySwoole\Redis\Redis $redis) {
+\EasySwoole\RedisPool\Redis::invoke(function (\EasySwoole\Redis\Redis $redis) {
     var_dump($redis->set('a', 1));
 });
 
