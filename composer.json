@@ -20,6 +20,7 @@
         }
     },
     "require": {
+        "php": ">=8.0",
         "easyswoole/component": "^2.0",
         "easyswoole/spl": "^1.1",
         "easyswoole/redis": "^2.0",

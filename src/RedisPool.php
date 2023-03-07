@@ -3,36 +3,33 @@
 namespace EasySwoole\RedisPool;
 
 use EasySwoole\Component\Singleton;
-use EasySwoole\Redis\Config\RedisConfig;
+use EasySwoole\Pool\AbstractPool;
+use EasySwoole\Redis\ClusterConfig;
+use EasySwoole\Redis\Config;
 use EasySwoole\Pool\Config as PoolConfig;
-use EasySwoole\Redis\Redis as RedisClient;
+use EasySwoole\Redis\Redis;
 use EasySwoole\Redis\RedisCluster;
-use EasySwoole\RedisPool\Exception\Exception;
 
 class RedisPool
 {
     use Singleton;
 
-    protected $container = [];
+    protected array $container = [];
 
-    function register(RedisConfig $config, string $name ='default', ?string $cask = null): PoolConfig
+    function register(Config|ClusterConfig $config, string $name ='default'):PoolConfig
     {
         if(isset($this->container[$name])){
             //已经注册，则抛出异常
-            throw new RedisPoolException("redis pool:{$name} is already been register");
+            throw new \Exception("redis pool:{$name} is already been register");
         }
-        if($cask){
-            $ref = new \ReflectionClass($cask);
-            if((!$ref->isSubclassOf(RedisClient::class)) && (!$ref->isSubclassOf(RedisCluster::class))){
-                throw new Exception("cask {$cask} not a sub class of EasySwoole\Redis\Redis or EasySwoole\Redis\RedisCluster");
-            }
-        }
-        $pool = new Pool($config,$cask);
+        $poolConfig = new PoolConfig();
+        $poolConfig->setExtraConf($config);
+        $pool = new _Pool($poolConfig);
         $this->container[$name] = $pool;
         return $pool->getConfig();
     }
 
-    function getPool(string $name ='default'): ?Pool
+    function getPool(string $name ='default'): ?AbstractPool
     {
         if (isset($this->container[$name])) {
             return $this->container[$name];
@@ -40,7 +37,7 @@ class RedisPool
         return null;
     }
 
-    static function defer(string $name ='default',$timeout = null):?RedisClient
+    static function defer(string $name ='default',$timeout = null):Redis|RedisCluster|null
     {
         $pool = static::getInstance()->getPool($name);
         if($pool){
