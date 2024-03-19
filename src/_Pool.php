@@ -5,8 +5,8 @@ namespace EasySwoole\RedisPool;
 use EasySwoole\Pool\AbstractPool;
 use EasySwoole\Redis\ClusterConfig;
 use EasySwoole\Redis\Config;
-use EasySwoole\Redis\Redis;
-use EasySwoole\Redis\RedisCluster;
+use EasySwoole\RedisPool\Client\Redis;
+use EasySwoole\RedisPool\Client\RedisCluster;
 
 class _Pool extends AbstractPool
 {
