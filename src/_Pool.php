@@ -40,7 +40,7 @@ class _Pool extends AbstractPool
             /** @var Config $config */
             $config = $this->getConfig()->getExtraConf();
             trigger_error("redis connection {$config->getHost()}:{$config->getPort()} ".$throwable->getMessage());
-            return $this->status(true)['created'];
+            return $this->status()['created'];
         }
     }
 
