@@ -12,18 +12,22 @@
         }
     ],
     "require-dev": {
-        "easyswoole/swoole-ide-helper": "^1.2"
+        "easyswoole/swoole-ide-helper": "^1.2",
+        "phpunit/phpunit": "^10.5"
     },
     "autoload": {
         "psr-4": {
             "EasySwoole\\RedisPool\\": "src/"
         }
     },
+    "scripts": {
+        "test": "phpunit"
+    },
     "require": {
-        "php": ">=8.0",
-        "easyswoole/component": "^2.0",
-        "easyswoole/spl": "^2.0",
-        "easyswoole/redis": "^2.0",
-        "easyswoole/pool": "^2.0"
+        "php": ">=8.1",
+        "ext-swoole": ">=5.1",
+        "easyswoole/component": "^2.4",
+        "easyswoole/pool": "^3.0",
+        "ext-redis": "*"
     }
 }

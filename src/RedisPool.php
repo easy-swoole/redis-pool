@@ -4,11 +4,7 @@ namespace EasySwoole\RedisPool;
 
 use EasySwoole\Component\Singleton;
 use EasySwoole\Pool\AbstractPool;
-use EasySwoole\Redis\ClusterConfig;
-use EasySwoole\Redis\Config;
-use EasySwoole\Pool\Config as PoolConfig;
-use EasySwoole\Redis\Redis;
-use EasySwoole\Redis\RedisCluster;
+use InvalidArgumentException;
 
 class RedisPool
 {
@@ -16,44 +12,35 @@ class RedisPool
 
     protected array $container = [];
 
-    function register(Config|ClusterConfig $config, string $name ='default'):PoolConfig
+    public function register(Config $config, string $name = 'default'): Config
     {
-        if(isset($this->container[$name])){
-            //已经注册，则抛出异常
-            throw new \Exception("redis pool:{$name} is already been register");
+        if ($name === '') {
+            throw new InvalidArgumentException('redis pool name cannot be empty');
         }
-        $poolConfig = new PoolConfig();
-        $poolConfig->setExtraConf($config);
-        $pool = new _Pool($poolConfig);
+        if (isset($this->container[$name])) {
+            throw new InvalidArgumentException("redis pool '{$name}' is already registered");
+        }
+
+        $pool = new Pool($config);
         $this->container[$name] = $pool;
         return $pool->getConfig();
     }
 
-    function getPool(string $name ='default'): ?AbstractPool
+    public function getPool(string $name = 'default'): ?AbstractPool
     {
-        if (isset($this->container[$name])) {
-            return $this->container[$name];
-        }
-        return null;
+        return $this->container[$name] ?? null;
     }
 
-    static function defer(string $name ='default',$timeout = null):Redis|RedisCluster|null
+    public static function defer(string $name = 'default', ?float $timeout = null): Client|ClusterClient|null
     {
         $pool = static::getInstance()->getPool($name);
-        if($pool){
-            return $pool->defer($timeout);
-        }else{
-            return null;
-        }
+        /** @var Client|ClusterClient|null */
+        return $pool?->defer($timeout);
     }
 
-    static function invoke(callable $call,string $name ='default',float $timeout = null)
+    public static function invoke(callable $call, string $name = 'default', ?float $timeout = null): mixed
     {
         $pool = static::getInstance()->getPool($name);
-        if($pool){
-            return $pool->invoke($call,$timeout);
-        }else{
-            return null;
-        }
+        return $pool?->invoke($call, $timeout);
     }
 }
